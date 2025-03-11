@@ -1,23 +1,29 @@
 // middleware/verify-token.js
 
-// We'll need to import jwt to use the verify method
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-function verifyToken(req, res, next) {
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  console.log("Incoming Authorization Header:", authHeader);
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ err: "Missing or malformed token." });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  console.log("Extracted Token:", token);
+
   try {
-    const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Assign decoded payload to req.user
-    req.user = decoded.payload;
-
-    // Call next() to invoke the next middleware function
+    console.log("Decoded Token:", decoded);
+    req.user = decoded;
     next();
   } catch (err) {
-    // If any errors, send back a 401 status and an 'Invalid token.' error message
-    res.status(401).json({ err: 'Invalid token.' });
+    console.error("JWT Verification Error:", err.message);
+    return res.status(401).json({ err: "Invalid token." });
   }
-}
+};
 
-// We'll need to export this function to use it in our controller files
 module.exports = verifyToken;
