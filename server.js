@@ -23,7 +23,7 @@ const userRouter = require('./controllers/users');
 app.use('/auth', authRouter);
 app.use('/test-jwt', testJwtRouter);
 app.use('/users', userRouter);
-app.use("/hoots", hootsRouter);
+app.use('/hoots', hootsRouter);
 
 app.listen(3000, () => {
   console.log('The express app is ready!');
